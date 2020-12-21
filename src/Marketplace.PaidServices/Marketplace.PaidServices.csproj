@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <LangVersion>8</LangVersion>
+  </PropertyGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="RavenDB.Client" Version="4.1.5" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <ProjectReference Include="..\Marketplace.EventSourcing\Marketplace.EventSourcing.csproj" />
+    <ProjectReference Include="..\Marketplace.EventStore\Marketplace.EventStore.csproj" />
+    <ProjectReference Include="..\Marketplace.PaidServices.Integration\Marketplace.PaidServices.Integration.csproj" />
+    <ProjectReference Include="..\Marketplace.PaidServices.Queries\Marketplace.PaidServices.Queries.csproj" />
+    <ProjectReference Include="..\Marketplace.RavenDb\Marketplace.RavenDb.csproj" />
+    <ProjectReference Include="..\Marketplace.WebApi\Marketplace.WebApi.csproj" />
+    <ProjectReference Include="..\Marketplace.PaidServices.Domain\Marketplace.PaidServices.Domain.csproj" />
+  </ItemGroup>
+
+</Project>
