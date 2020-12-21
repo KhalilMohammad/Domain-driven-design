@@ -4,7 +4,9 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAdText : Value<ClassifiedAdText>
     {
-        public string Value { get; }
+        public string Value { get; internal set; }
+        
+        protected ClassifiedAdText() {}
 
         internal ClassifiedAdText(string text) => Value = text;
         
@@ -13,5 +15,8 @@ namespace Marketplace.Domain
         
         public static implicit operator string(ClassifiedAdText text) =>
             text.Value;
+        
+        public static ClassifiedAdText NoText =>
+            new ClassifiedAdText();
     }
 }

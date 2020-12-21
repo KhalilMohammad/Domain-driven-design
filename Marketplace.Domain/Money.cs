@@ -5,6 +5,8 @@ namespace Marketplace.Domain
 {
     public class Money : Value<Money>
     {
+        protected Money() {}
+        
         public static Money FromDecimal(decimal amount, string currency, 
             ICurrencyLookup currencyLookup) =>
             new Money(amount, currency, currencyLookup);
@@ -38,8 +40,8 @@ namespace Marketplace.Domain
             Currency = currency;
         }
 
-        public decimal Amount { get; }
-        public Currency Currency { get; }
+        public decimal Amount { get; internal set; }
+        public Currency Currency { get; internal set; }
 
         public Money Add(Money summand)
         {

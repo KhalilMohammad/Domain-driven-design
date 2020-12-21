@@ -6,6 +6,8 @@ namespace Marketplace.Domain
 {
     public class ClassifiedAdTitle : Value<ClassifiedAdTitle>
     {
+        protected ClassifiedAdTitle() {}
+        
         public static ClassifiedAdTitle FromString(string title)
         {
             CheckValidity(title);
@@ -26,7 +28,7 @@ namespace Marketplace.Domain
             return new ClassifiedAdTitle(value);
         }
 
-        public string Value { get; }
+        public string Value { get; internal set; }
 
         internal ClassifiedAdTitle(string value) => Value = value;
 
@@ -40,5 +42,8 @@ namespace Marketplace.Domain
                     "Title cannot be longer that 100 characters",
                     nameof(value));
         }
+        
+        public static ClassifiedAdTitle NoTitle =
+            new ClassifiedAdTitle();
     }
 }

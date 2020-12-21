@@ -5,10 +5,20 @@ namespace Marketplace.Domain
 {
     public class Picture : Entity<PictureId>
     {
-        internal ClassifiedAdId ParentId { get; private set; }
-        internal PictureSize Size { get; private set; }
-        internal Uri Location { get; private set; }
-        internal int Order { get; private set; }
+        // Properties to handle the persistence
+        public Guid PictureId
+        {
+            get => Id.Value;
+            set {}
+        }
+        
+        protected Picture() {}
+        
+        // Entity state
+        public ClassifiedAdId ParentId { get; private set; }
+        public PictureSize Size { get; private set; }
+        public string Location { get; private set; }
+        public int Order { get; private set; }
 
         protected override void When(object @event)
         {
@@ -17,7 +27,7 @@ namespace Marketplace.Domain
                 case Events.PictureAddedToAClassifiedAd e:
                     ParentId = new ClassifiedAdId(e.ClassifiedAdId);
                     Id = new PictureId(e.PictureId);
-                    Location = new Uri(e.Url);
+                    Location = e.Url;
                     Size = new PictureSize {Height = e.Height, Width = e.Width};
                     Order = e.Order;
                     break;
@@ -46,5 +56,7 @@ namespace Marketplace.Domain
         public PictureId(Guid value) => Value = value;
 
         public Guid Value { get; }
+        
+        protected PictureId() {}
     }
 }
