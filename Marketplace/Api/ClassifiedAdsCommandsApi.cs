@@ -1,22 +1,23 @@
 using System.Threading.Tasks;
+using Marketplace.Contracts;
 using Microsoft.AspNetCore.Mvc;
-using static Marketplace.Contracts.ClassifiedAds;
 
 namespace Marketplace.Api
 {
     [Route("/ad")]
     public class ClassifiedAdsCommandsApi : Controller
     {
-        private readonly ClassifiedAdsApplicationService 
-            _applicationService;
+        private readonly ClassifiedAdsApplicationService _applicationService;
 
         public ClassifiedAdsCommandsApi(
-            ClassifiedAdsApplicationService applicationService
-        )
+            ClassifiedAdsApplicationService applicationService)
             => _applicationService = applicationService;
 
+        [HttpGet]
+        public object Get() => new {Something = "whatever"};
+
         [HttpPost]
-        public async Task<IActionResult> Post(V1.Create request)
+        public async Task<IActionResult> Post(ClassifiedAds.V1.Create request)
         {
             await _applicationService.Handle(request);
             return Ok();
@@ -24,7 +25,7 @@ namespace Marketplace.Api
 
         [Route("name")]
         [HttpPut]
-        public async Task<IActionResult> Put(V1.SetTitle request)
+        public async Task<IActionResult> Put(ClassifiedAds.V1.SetTitle request)
         {
             await _applicationService.Handle(request);
             return Ok();
@@ -32,7 +33,7 @@ namespace Marketplace.Api
 
         [Route("text")]
         [HttpPut]
-        public async Task<IActionResult> Put(V1.UpdateText request)
+        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdateText request)
         {
             await _applicationService.Handle(request);
             return Ok();
@@ -40,7 +41,7 @@ namespace Marketplace.Api
 
         [Route("price")]
         [HttpPut]
-        public async Task<IActionResult> Put(V1.UpdatePrice request)
+        public async Task<IActionResult> Put(ClassifiedAds.V1.UpdatePrice request)
         {
             await _applicationService.Handle(request);
             return Ok();
@@ -48,7 +49,7 @@ namespace Marketplace.Api
 
         [Route("publish")]
         [HttpPut]
-        public async Task<IActionResult> Put(V1.RequestToPublish request)
+        public async Task<IActionResult> Put(ClassifiedAds.V1.RequestToPublish request)
         {
             await _applicationService.Handle(request);
             return Ok();
