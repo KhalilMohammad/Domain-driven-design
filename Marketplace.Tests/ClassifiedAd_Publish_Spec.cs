@@ -1,5 +1,7 @@
 ﻿using System;
 using Marketplace.Domain;
+using Marketplace.Domain.ClassifiedAd;
+using Marketplace.Domain.Shared;
 using Xunit;
 
 namespace Marketplace.Tests
@@ -37,7 +39,7 @@ namespace Marketplace.Tests
             _classifiedAd.UpdatePrice(
                 Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()));
             
-            Assert.Throws<InvalidEntityStateException>(() => _classifiedAd.RequestToPublish());
+            Assert.Throws<DomainExceptions.InvalidEntityState>(() => _classifiedAd.RequestToPublish());
         }
 
         [Fact]
@@ -47,7 +49,7 @@ namespace Marketplace.Tests
             _classifiedAd.UpdatePrice(
                 Price.FromDecimal(100.10m, "EUR", new FakeCurrencyLookup()));
             
-            Assert.Throws<InvalidEntityStateException>(() => _classifiedAd.RequestToPublish());
+            Assert.Throws<DomainExceptions.InvalidEntityState>(() => _classifiedAd.RequestToPublish());
         }
 
         [Fact]
@@ -56,7 +58,7 @@ namespace Marketplace.Tests
             _classifiedAd.SetTitle(ClassifiedAdTitle.FromString("Test ad"));
             _classifiedAd.UpdateText(ClassifiedAdText.FromString("Please buy my stuff"));
             
-            Assert.Throws<InvalidEntityStateException>(() => _classifiedAd.RequestToPublish());
+            Assert.Throws<DomainExceptions.InvalidEntityState>(() => _classifiedAd.RequestToPublish());
         }
 
         [Fact]
@@ -67,7 +69,7 @@ namespace Marketplace.Tests
             _classifiedAd.UpdatePrice(
                 Price.FromDecimal(0.0m, "EUR", new FakeCurrencyLookup()));
             
-            Assert.Throws<InvalidEntityStateException>(() => _classifiedAd.RequestToPublish());
+            Assert.Throws<DomainExceptions.InvalidEntityState>(() => _classifiedAd.RequestToPublish());
         }
     }
 }
