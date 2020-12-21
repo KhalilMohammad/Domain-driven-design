@@ -20,84 +20,70 @@ namespace Marketplace.Domain.ClassifiedAd
         public ClassifiedAd(ClassifiedAdId id, UserId ownerId)
         {
             Pictures = new List<Picture>();
-            Apply(
-                new Events.ClassifiedAdCreated
-                {
-                    Id = id,
-                    OwnerId = ownerId
-                }
-            );
+            Apply(new Events.ClassifiedAdCreated
+            {
+                Id = id,
+                OwnerId = ownerId
+            });
         }
 
         public void SetTitle(ClassifiedAdTitle title) =>
-            Apply(
-                new Events.ClassifiedAdTitleChanged
-                {
-                    Id = Id,
-                    Title = title
-                }
-            );
+            Apply(new Events.ClassifiedAdTitleChanged
+            {
+                Id = Id,
+                Title = title
+            });
 
         public void UpdateText(ClassifiedAdText text) =>
-            Apply(
-                new Events.ClassifiedAdTextUpdated
-                {
-                    Id = Id,
-                    AdText = text
-                }
-            );
+            Apply(new Events.ClassifiedAdTextUpdated
+            {
+                Id = Id,
+                AdText = text
+            });
 
         public void UpdatePrice(Price price) =>
-            Apply(
-                new Events.ClassifiedAdPriceUpdated
-                {
-                    Id = Id,
-                    Price = price.Amount,
-                    CurrencyCode = price.Currency.CurrencyCode
-                }
-            );
+            Apply(new Events.ClassifiedAdPriceUpdated
+            {
+                Id = Id,
+                Price = price.Amount,
+                CurrencyCode = price.Currency.CurrencyCode
+            });
 
         public void RequestToPublish() =>
             Apply(new Events.ClassidiedAdSentForReview {Id = Id});
-
+        
         public void Publish(UserId userId) =>
-            Apply(new Events.ClassifiedAdPublished 
-                {Id = Id, ApprovedBy = userId}
-            );
-
-        public void AddPicture(Uri pictureUri, PictureSize size)
-        {
-            Apply(
-                new Events.PictureAddedToAClassifiedAd
-                {
-                    PictureId = new Guid(),
-                    ClassifiedAdId = Id,
-                    Url = pictureUri.ToString(),
-                    Height = size.Height,
-                    Width = size.Width,
-                    Order = NewPictureOrder()
-                }
-            );
-
-            int NewPictureOrder() => Pictures.Any() 
-                ? Pictures.Max(x => x.Order) + 1 
-                : 0;
-        }
+            Apply(new Events.ClassifiedAdPublished
+            {
+                Id = Id, 
+                ApprovedBy = userId,
+                OwnerId = OwnerId
+            });
+        
+        public void AddPicture(Uri pictureUri, PictureSize size) =>
+            Apply(new Events.PictureAddedToAClassifiedAd
+            {
+                PictureId = new Guid(),
+                ClassifiedAdId = Id,
+                Url = pictureUri.ToString(),
+                Height = size.Height,
+                Width = size.Width,
+                Order = Pictures.Max(x => x.Order)
+            });
 
         public void ResizePicture(PictureId pictureId, PictureSize newSize)
         {
             var picture = FindPicture(pictureId);
             if (picture == null)
-                throw new InvalidOperationException(
-                    "Cannot resize a picture that I don't have");
-
+                throw new InvalidOperationException("Cannot resize a picture that I don't have");
+            
             picture.Resize(newSize);
         }
 
         protected override void When(object @event)
         {
             Picture picture;
-
+            
             switch (@event)
             {
                 case Events.ClassifiedAdCreated e:
@@ -122,7 +108,7 @@ namespace Marketplace.Domain.ClassifiedAd
                     ApprovedBy = new UserId(e.ApprovedBy);
                     State = ClassifiedAdState.Active;
                     break;
-
+                
                 // picture
                 case Events.PictureAddedToAClassifiedAd e:
                     picture = new Picture(Apply);
@@ -164,10 +150,8 @@ namespace Marketplace.Domain.ClassifiedAd
                 throw new DomainExceptions.InvalidEntityState(
                     this, $"Post-checks failed in state {State}");
         }
-
-        protected ClassifiedAd()
-        {
-        }
+        
+        protected ClassifiedAd() { }
 
         public enum ClassifiedAdState
         {

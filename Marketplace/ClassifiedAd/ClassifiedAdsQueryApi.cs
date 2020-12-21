@@ -1,7 +1,7 @@
-using System.Data.Common;
 using System.Threading.Tasks;
 using Marketplace.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Raven.Client.Documents.Session;
 using Serilog;
 
 namespace Marketplace.ClassifiedAd
@@ -9,25 +9,14 @@ namespace Marketplace.ClassifiedAd
     [Route("/ad")]
     public class ClassifiedAdsQueryApi : Controller
     {
+        private readonly IAsyncDocumentSession _session;
         private static ILogger _log = Log.ForContext<ClassifiedAdsQueryApi>();
         
-        private readonly DbConnection _connection;
-
-        public ClassifiedAdsQueryApi(DbConnection connection)
-            => _connection = connection;
-
-        [HttpGet]
-        [Route("list")]
-        public Task<IActionResult> Get(QueryModels.GetPublishedClassifiedAds request) 
-            => RequestHandler.HandleQuery(() => _connection.Query(request), _log);
-
-        [HttpGet]
-        [Route("myads")]
-        public Task<IActionResult> Get(QueryModels.GetOwnersClassifiedAd request)
-            => RequestHandler.HandleQuery(() => _connection.Query(request), _log);
+        public ClassifiedAdsQueryApi(IAsyncDocumentSession session) => 
+            _session = session;
 
         [HttpGet]
         public Task<IActionResult> Get(QueryModels.GetPublicClassifiedAd request)
-            => RequestHandler.HandleQuery(() => _connection.Query(request), _log);
+            => RequestHandler.HandleQuery(() => _session.Query(request), _log);
     }
 }
