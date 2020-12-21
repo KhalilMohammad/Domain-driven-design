@@ -5,8 +5,6 @@ namespace Marketplace.Domain.ClassifiedAd
 {
     public class Price : Money
     {
-        protected Price() {}
-        
         private Price(decimal amount, string currencyCode, ICurrencyLookup currencyLookup)
             : base(amount, currencyCode, currencyLookup)
         {
@@ -17,7 +15,7 @@ namespace Marketplace.Domain.ClassifiedAd
         }
 
         internal Price(decimal amount, string currencyCode)
-            : base(amount, new Currency{CurrencyCode = currencyCode, InUse = true})
+            : base(amount, new Currency{CurrencyCode = currencyCode})
         {
         }
 
@@ -25,11 +23,7 @@ namespace Marketplace.Domain.ClassifiedAd
             ICurrencyLookup currencyLookup) =>
             new Price(amount, currency, currencyLookup);
         
-        public static Price NoPrice =>
-            new Price
-            {
-                Amount = -1, 
-                Currency = Currency.None
-            };
+        // Satisfy the serialization requirements
+        protected Price() { }
     }
 }

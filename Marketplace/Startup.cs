@@ -1,20 +1,15 @@
-﻿using System.Data;
-using System.Data.Common;
+﻿using EventStore.ClientAPI;
 using Marketplace.ClassifiedAd;
-using Marketplace.Domain;
-using Marketplace.Domain.ClassifiedAd;
-using Marketplace.Domain.Shared;
-using Marketplace.Domain.UserProfile;
 using Marketplace.Framework;
 using Marketplace.Infrastructure;
 using Marketplace.UserProfile;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
+using Microsoft.Extensions.Hosting;
 using Swashbuckle.AspNetCore.Swagger;
+using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 // ReSharper disable UnusedMember.Global
 
@@ -33,25 +28,22 @@ namespace Marketplace
 
         public void ConfigureServices(IServiceCollection services)
         {
-            const string connectionString = 
-                "Host=localhost;Database=Marketplace_Chapter9;Username=ddd;Password=book";
-            services.AddEntityFrameworkNpgsql();
-            services.AddPostgresDbContext<MarketplaceDbContext>(connectionString);
-            services.AddScoped<DbConnection>(c => new NpgsqlConnection(connectionString));
-
+            var esConnection = EventStoreConnection.Create(
+                Configuration["eventStore:connectionString"],
+                ConnectionSettings.Create().KeepReconnecting(),
+                Environment.ApplicationName);
+            var store = new EsAggregateStore(esConnection);
             var purgomalumClient = new PurgomalumClient();
-            
-            services.AddSingleton<ICurrencyLookup, FixedCurrencyLookup>();
-            services.AddScoped<IUnitOfWork, EfCoreUnitOfWork>();
-            services.AddScoped<IClassifiedAdRepository, ClassifiedAdRepository>();
-            services.AddScoped<IUserProfileRepository, UserProfileRepository>();
-            services.AddScoped<ClassifiedAdsApplicationService>();
-            services.AddScoped(c => 
-                new UserProfileApplicationService(
-                    c.GetService<IUserProfileRepository>(),
-                    c.GetService<IUnitOfWork>(),
-                    text => purgomalumClient.CheckForProfanity(text).GetAwaiter().GetResult()));
 
+            services.AddSingleton(esConnection);
+            services.AddSingleton<IAggregateStore>(store);
+
+            services.AddSingleton(new ClassifiedAdsApplicationService(
+                store, new FixedCurrencyLookup()));
+            services.AddSingleton(new UserProfileApplicationService(
+                store, t => purgomalumClient.CheckForProfanity(t)));
+
+            services.AddSingleton<IHostedService, HostedService>();
             services.AddMvc();
             services.AddSwaggerGen(c =>
             {
@@ -66,7 +58,11 @@ namespace Marketplace
 
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            app.EnsureDatabase();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
             app.UseMvcWithDefaultRoute();
             app.UseSwagger();
             app.UseSwaggerUI(c =>

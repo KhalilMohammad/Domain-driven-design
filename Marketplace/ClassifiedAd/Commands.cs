@@ -2,7 +2,7 @@ using System;
 
 namespace Marketplace.ClassifiedAd
 {
-    public static class Commands
+    public static class Contracts
     {
         public static class V1
         {
@@ -35,7 +35,7 @@ namespace Marketplace.ClassifiedAd
             {
                 public Guid Id { get; set; }
             }
-            
+
             public class Publish
             {
                 public Guid Id { get; set; }

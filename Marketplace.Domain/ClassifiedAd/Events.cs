@@ -1,4 +1,5 @@
 ﻿using System;
+using Marketplace.Domain.Shared;
 
 namespace Marketplace.Domain.ClassifiedAd
 {
@@ -39,7 +40,7 @@ namespace Marketplace.Domain.ClassifiedAd
             public Guid Id { get; set; }
             public Guid ApprovedBy { get; set; }
         }
-        
+
         public class PictureAddedToAClassifiedAd
         {
             public Guid ClassifiedAdId { get; set; }

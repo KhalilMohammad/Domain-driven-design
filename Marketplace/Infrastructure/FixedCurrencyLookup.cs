@@ -6,7 +6,7 @@ namespace Marketplace.Infrastructure
 {
     public class FixedCurrencyLookup : ICurrencyLookup
     {
-        private static readonly IEnumerable<Currency> _currencies =
+        private static readonly IEnumerable<Currency> Currencies =
             new[]
             {
                 new Currency
@@ -25,7 +25,7 @@ namespace Marketplace.Infrastructure
 
         public Currency FindCurrency(string currencyCode)
         {
-            var currency = _currencies.FirstOrDefault(x => x.CurrencyCode == currencyCode);
+            var currency = Currencies.FirstOrDefault(x => x.CurrencyCode == currencyCode);
             return currency ?? Currency.None;
         }
     }

@@ -10,8 +10,6 @@ namespace Marketplace.Framework
         public TId Id { get; protected set; }
 
         protected Entity(Action<object> applier) => _applier = applier;
-        
-        protected Entity() {}
 
         protected abstract void When(object @event);
 

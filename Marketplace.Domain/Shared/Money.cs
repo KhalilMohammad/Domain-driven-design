@@ -5,8 +5,6 @@ namespace Marketplace.Domain.Shared
 {
     public class Money : Value<Money>
     {
-        protected Money() {}
-        
         public static Money FromDecimal(decimal amount, string currency, 
             ICurrencyLookup currencyLookup) =>
             new Money(amount, currency, currencyLookup);
@@ -40,8 +38,8 @@ namespace Marketplace.Domain.Shared
             Currency = currency;
         }
 
-        public decimal Amount { get; internal set; }
-        public Currency Currency { get; internal set; }
+        public decimal Amount { get; private set; }
+        public Currency Currency { get; private set; }
 
         public Money Add(Money summand)
         {
@@ -68,6 +66,9 @@ namespace Marketplace.Domain.Shared
             minuend.Subtract(subtrahend);
 
         public override string ToString() => $"{Currency.CurrencyCode} {Amount}";
+        
+        // Satisfy the serialization requirements
+        protected Money() { }
     }
 
     public class CurrencyMismatchException : Exception

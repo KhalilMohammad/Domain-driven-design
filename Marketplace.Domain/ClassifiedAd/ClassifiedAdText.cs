@@ -4,9 +4,7 @@ namespace Marketplace.Domain.ClassifiedAd
 {
     public class ClassifiedAdText : Value<ClassifiedAdText>
     {
-        public string Value { get; internal set; }
-        
-        protected ClassifiedAdText() {}
+        public string Value { get; private set; }
 
         internal ClassifiedAdText(string text) => Value = text;
         
@@ -16,7 +14,7 @@ namespace Marketplace.Domain.ClassifiedAd
         public static implicit operator string(ClassifiedAdText text) =>
             text.Value;
         
-        public static ClassifiedAdText NoText =>
-            new ClassifiedAdText();
+        // Satisfy the serialization requirements 
+        protected ClassifiedAdText() { }
     }
 }

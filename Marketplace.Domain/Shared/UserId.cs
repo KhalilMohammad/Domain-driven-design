@@ -5,9 +5,7 @@ namespace Marketplace.Domain.Shared
 {
     public class UserId : Value<UserId>
     {
-        protected UserId() {}
-        
-        public Guid Value { get; internal set; }
+        public Guid Value { get; private set; }
 
         public UserId(Guid value)
         {
@@ -18,8 +16,5 @@ namespace Marketplace.Domain.Shared
         }
         
         public static implicit operator Guid(UserId self) => self.Value;
-        
-        public static UserId NoUser =>
-            new UserId();
     }
 }

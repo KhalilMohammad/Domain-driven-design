@@ -5,9 +5,7 @@ namespace Marketplace.Domain.ClassifiedAd
 {
     public class ClassifiedAdId : Value<ClassifiedAdId>
     {
-        public Guid Value { get; internal set; }
-        
-        protected ClassifiedAdId() {}
+        public Guid Value { get; }
 
         public ClassifiedAdId(Guid value)
         {

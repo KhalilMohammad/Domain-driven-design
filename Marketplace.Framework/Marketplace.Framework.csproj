@@ -1,5 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="EventStore.Client" Version="5.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
 </Project>

@@ -17,7 +17,7 @@ namespace Marketplace.Domain.UserProfile
             if (displayName.IsEmpty())
                 throw new ArgumentNullException(nameof(FullName));
             
-            if (hasProfanity(displayName))
+            if (hasProfanity(displayName).GetAwaiter().GetResult())
                 throw new DomainExceptions.ProfanityFound(displayName);
 
             return new DisplayName(displayName);

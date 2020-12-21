@@ -6,8 +6,6 @@ namespace Marketplace.Domain.ClassifiedAd
 {
     public class ClassifiedAdTitle : Value<ClassifiedAdTitle>
     {
-        protected ClassifiedAdTitle() {}
-        
         public static ClassifiedAdTitle FromString(string title)
         {
             CheckValidity(title);
@@ -28,7 +26,7 @@ namespace Marketplace.Domain.ClassifiedAd
             return new ClassifiedAdTitle(value);
         }
 
-        public string Value { get; internal set; }
+        public string Value { get; private set; }
 
         internal ClassifiedAdTitle(string value) => Value = value;
 
@@ -43,7 +41,7 @@ namespace Marketplace.Domain.ClassifiedAd
                     nameof(value));
         }
         
-        public static ClassifiedAdTitle NoTitle =
-            new ClassifiedAdTitle();
+        // Satisfy the serialization requirements 
+        protected ClassifiedAdTitle() { }
     }
 }

@@ -7,27 +7,25 @@ using static Marketplace.UserProfile.Contracts;
 
 namespace Marketplace.UserProfile
 {
-    public class UserProfileApplicationService : IApplicationService
+    public class UserProfileApplicationService
+        : IApplicationService
     {
-        private readonly IUserProfileRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IAggregateStore _store;
         private readonly CheckTextForProfanity _checkText;
 
         public UserProfileApplicationService(
-            IUserProfileRepository repository,
-            IUnitOfWork unitOfWork,
+            IAggregateStore store,
             CheckTextForProfanity checkText
         )
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
+            _store = store;
             _checkText = checkText;
         }
 
         public Task Handle(object command) =>
             command switch
             {
-                V1.RegisterUser cmd => 
+                V1.RegisterUser cmd =>
                     HandleCreate(cmd),
                 V1.UpdateUserFullName cmd =>
                     HandleUpdate(
@@ -40,20 +38,29 @@ namespace Marketplace.UserProfile
                     HandleUpdate(
                         cmd.UserId,
                         profile => profile.UpdateDisplayName(
-                            DisplayName.FromString(cmd.DisplayName, _checkText)
+                            DisplayName.FromString(
+                                cmd.DisplayName,
+                                _checkText
+                            )
                         )
                     ),
                 V1.UpdateUserProfilePhoto cmd =>
                     HandleUpdate(
                         cmd.UserId,
-                        profile => profile.UpdateProfilePhoto(new Uri(cmd.PhotoUrl))
+                        profile => profile
+                            .UpdateProfilePhoto(
+                                new Uri(cmd.PhotoUrl)
+                            )
                     ),
                 _ => Task.CompletedTask
             };
 
         private async Task HandleCreate(V1.RegisterUser cmd)
         {
-            if (await _repository.Exists(new UserId(cmd.UserId)))
+            if (await _store
+                .Exists<Domain.UserProfile.UserProfile, UserId>(
+                    new UserId(cmd.UserId)
+                ))
                 throw new InvalidOperationException(
                     $"Entity with id {cmd.UserId} already exists"
                 );
@@ -64,26 +71,20 @@ namespace Marketplace.UserProfile
                 DisplayName.FromString(cmd.DisplayName, _checkText)
             );
 
-            await _repository.Add(userProfile);
-            await _unitOfWork.Commit();
-        }
-
-        private async Task HandleUpdate(
-            Guid userProfileId,
-            Action<Domain.UserProfile.UserProfile> operation
-        )
-        {
-            var userProfile = await _repository.Load(
-                new UserId(userProfileId)
-            );
-            if (userProfile == null)
-                throw new InvalidOperationException(
-                    $"Entity with id {userProfileId} cannot be found"
+            await _store
+                .Save<Domain.UserProfile.UserProfile, UserId>(
+                    userProfile
                 );
-
-            operation(userProfile);
-
-            await _unitOfWork.Commit();
         }
+
+        private Task HandleUpdate(
+            Guid id,
+            Action<Domain.UserProfile.UserProfile> update
+        ) =>
+            this.HandleUpdate(
+                _store,
+                new UserId(id),
+                update
+            );
     }
 }
